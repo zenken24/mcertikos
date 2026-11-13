@@ -64,8 +64,20 @@ int mon_kerninfo(int argc, char **argv, struct Trapframe *tf)
 
 int mon_backtrace(int argc, char **argv, struct Trapframe *tf)
 {
-    // TODO [Lab 1] (optional): print the chain of saved %ebp / return %eip
-    // values on the kernel stack, starting from the current %ebp.
+    uint32_t *ebp = (uint32_t *)read_ebp();
+
+    dprintf("Stack backtrace:\n");
+
+    while (ebp != 0) {
+        dprintf("  ebp %08x  eip %08x  args",
+                ebp, ebp[1]);
+
+        dprintf(" %08x %08x %08x %08x %08x\n",
+                ebp[2], ebp[3], ebp[4], ebp[5], ebp[6]);
+
+        ebp = (uint32_t *)ebp[0];
+    }
+
     return 0;
 }
 

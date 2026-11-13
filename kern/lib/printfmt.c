@@ -178,7 +178,9 @@ void vprintfmt(putch_t putch, void *putdat, const char *fmt, va_list ap)
         // (unsigned) octal
         case 'o':
             // TODO [Lab 1] (optional): print an unsigned number in base 8.
-
+            num = getuint(&ap, lflag);
+            base = 8;
+            goto number;
         // pointer
         case 'p':
             putch('0', putdat);

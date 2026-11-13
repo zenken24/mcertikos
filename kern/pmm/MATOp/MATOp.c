@@ -28,16 +28,35 @@
  */
 unsigned int palloc()
 {
+    static unsigned int next_index = VM_USERLO_PI;
     unsigned int palloc_free_index = 0;
+    unsigned int start_index, i, end;
 
     mem_lock();
 
-    // TODO [Lab 1]
+    end = get_nps() < VM_USERHI_PI ? get_nps() : VM_USERHI_PI;
+    if (next_index < VM_USERLO_PI || next_index >= end)
+        next_index = VM_USERLO_PI;
+
+    start_index = next_index;
+    i = start_index;
+    do {
+        if (at_is_norm(i) && !at_is_allocated(i)) {
+            at_set_allocated(i, 1);
+            palloc_free_index = i;
+            next_index = i + 1;   
+            break;
+        }
+        i++;
+        if (i >= end)
+            i = VM_USERLO_PI;
+    } while (i != start_index);
 
     mem_unlock();
 
     return palloc_free_index;
 }
+
 
 /**
  * Free a physical page.
@@ -50,6 +69,6 @@ unsigned int palloc()
 void pfree(unsigned int pfree_index)
 {
     mem_lock();
-    // TODO [Lab 1]
+    at_set_allocated(pfree_index, 0);
     mem_unlock();
 }
